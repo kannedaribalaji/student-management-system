@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+    <style>
+        body { font-family: Arial; background:#f4f4f4; }
+        .box { background:#fff; padding:20px; width:520px; margin:auto; }
+        input, button, select { width:100%; margin:5px 0; padding:8px; }
+        table { width:100%; margin-top:10px; border-collapse:collapse; font-size:12px; }
+        th, td { border:1px solid #000; padding:5px; text-align:center; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Student Management System</h2>
+
+    <!-- Student input fields -->
+    <input id="id" placeholder="Student ID">
+    <input id="name" placeholder="Student Name">
+    <input id="email" placeholder="Email">
+    <input id="marks" placeholder="Marks (out of 100)">
+    <input id="sgpa" placeholder="SGPA">
+    <input id="cgpa" placeholder="CGPA">
+
+    <!-- Certificate status -->
+    <select id="cert">
+        <option value="Yes">Certificate: Yes</option>
+        <option value="No">Certificate: No</option>
+    </select>
+
+    <!-- Main actions -->
+    <button onclick="addStudent()">Add Student</button>
+    <button onclick="showStudents()">View Students</button>
+
+    <!-- Search section -->
+    <input id="searchId" placeholder="Search by ID">
+    <button onclick="searchStudent()">Search</button>
+
+    <!-- Student details table -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th><th>Name</th><th>Email</th><th>Marks</th>
+                <th>%</th><th>Grade</th><th>SGPA</th><th>CGPA</th>
+                <th>Certificate</th><th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="table">
+            <!-- Data will be shown here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+function grade(m) {
+    if (m >= 80) return "A";
+    if (m >= 60) return "B";
+    if (m >= 40) return "C";
+    return "Fail";
+}
+
+function addStudent() {
+    let student = {
+        id: document.getElementById("id").value,
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        marks: document.getElementById("marks").value,
+        sgpa: document.getElementById("sgpa").value,
+        cgpa: document.getElementById("cgpa").value,
+        cert: document.getElementById("cert").value
+    };
+
+    students.push(student);
+    localStorage.setItem("students", JSON.stringify(students));
+    alert("Student Added");
+    showStudents();
+}
+
+function showStudents() {
+    let table = document.getElementById("table");
+    table.innerHTML = "";
+
+    students.forEach((s, i) => {
+        table.innerHTML += `
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.email}</td>
+            <td>${s.marks}</td>
+            <td>${s.marks}%</td>
+            <td>${grade(s.marks)}</td>
+            <td>${s.sgpa}</td>
+            <td>${s.cgpa}</td>
+            <td>${s.cert}</td>
+            <td><button onclick="del(${i})">Delete</button></td>
+        </tr>`;
+    });
+}
+function searchStudent() {
+    let id = document.getElementById("searchId").value;
+    let table = document.getElementById("table");
+    table.innerHTML = "";
+
+    students.filter(s => s.id == id).forEach(s => {
+        table.innerHTML += `
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.email}</td>
+            <td>${s.marks}</td>
+            <td>${s.marks}%</td>
+            <td>${grade(s.marks)}</td>
+            <td>${s.sgpa}</td>
+            <td>${s.cgpa}</td>
+            <td>${s.cert}</td>
+            <td>-</td>
+        </tr>`;
+    });
+}
+
+function del(i) {
+    students.splice(i, 1);
+    localStorage.setItem("students", JSON.stringify(students));
+    showStudents();
+}
+</script>
+
+</body>
+</html>
